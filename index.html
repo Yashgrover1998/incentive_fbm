@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incentive Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+
+    <div class="container mx-auto p-4 sm:p-8 md:p-12">
+        <div class="max-w-xl mx-auto bg-white p-6 sm:p-8 md:p-10 rounded-xl shadow-2xl space-y-6">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-center text-gray-800">Incentive Calculator</h1>
+            <p class="text-sm text-center text-gray-500">
+                Please fill in the details below to calculate your incentive.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                    <label for="dateOfJoining" class="block text-sm font-medium text-gray-700 mb-1">Date of Joining</label>
+                    <input type="date" id="dateOfJoining" class="w-full px-4 py-2 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm transition duration-150 ease-in-out">
+                </div>
+                <div>
+                    <label for="disbursalTarget" class="block text-sm font-medium text-gray-700 mb-1">Disbursal Target (Count)</label>
+                    <input type="number" id="disbursalTarget" placeholder="e.g., 5" class="w-full px-4 py-2 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm transition duration-150 ease-in-out">
+                </div>
+                <div>
+                    <label for="disbursalAchieved" class="block text-sm font-medium text-gray-700 mb-1">Disbursal Achieved (Count)</label>
+                    <input type="number" id="disbursalAchieved" placeholder="e.g., 4" class="w-full px-4 py-2 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm transition duration-150 ease-in-out">
+                </div>
+                <div>
+                    <label for="disbursalAmount" class="block text-sm font-medium text-gray-700 mb-1">Disbursal Amount (₹)</label>
+                    <input type="number" id="disbursalAmount" placeholder="e.g., 48000000" class="w-full px-4 py-2 rounded-lg border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 shadow-sm transition duration-150 ease-in-out">
+                </div>
+            </div>
+
+            <div class="flex justify-center pt-4">
+                <button onclick="calculateIncentive()" class="w-full sm:w-auto px-8 py-3 bg-indigo-600 text-white font-bold rounded-lg shadow-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition duration-150 ease-in-out">
+                    Calculate Incentive
+                </button>
+            </div>
+
+            <div class="pt-6 space-y-4">
+                <div class="bg-gray-50 p-4 rounded-lg shadow-inner">
+                    <h2 class="text-xl font-bold text-gray-800 mb-2">Results</h2>
+                    <div class="space-y-2">
+                        <div class="flex justify-between items-center text-sm font-medium">
+                            <span>Months in System</span>
+                            <span id="monthsInSystem" class="font-bold text-gray-900">N/A</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm font-medium">
+                            <span>Disbursal Target vs. Achievement</span>
+                            <span id="targetVsAch" class="font-bold text-gray-900">N/A</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm font-medium">
+                            <span>Main Incentive</span>
+                            <span id="mainIncentive" class="font-bold text-green-600">N/A</span>
+                        </div>
+                        <div class="flex justify-between items-center text-sm font-medium">
+                            <span>Additional Incentive</span>
+                            <span id="additionalIncentive" class="font-bold text-green-600">N/A</span>
+                        </div>
+                        <div class="pt-2 flex justify-between items-center text-lg font-bold border-t border-gray-200">
+                            <span>Total Incentive</span>
+                            <span id="totalIncentive" class="text-indigo-600">N/A</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculateIncentive() {
+            // Get input values from the form
+            const dateOfJoining = document.getElementById('dateOfJoining').value;
+            const disbursalTarget = parseFloat(document.getElementById('disbursalTarget').value);
+            const disbursalAchieved = parseFloat(document.getElementById('disbursalAchieved').value);
+            const disbursalAmount = parseFloat(document.getElementById('disbursalAmount').value);
+
+            // --- Calculation of Intermediate Results ---
+            
+            // Calculate Months in System
+            let monthsInSystem = 0;
+            if (dateOfJoining) {
+                const doj = new Date(dateOfJoining);
+                const today = new Date();
+                monthsInSystem = Math.floor((today - doj) / (1000 * 60 * 60 * 24 * 30.44));
+                document.getElementById('monthsInSystem').innerText = monthsInSystem;
+            } else {
+                document.getElementById('monthsInSystem').innerText = "N/A";
+            }
+
+            // Calculate Disbursal Target vs. Achievement
+            let targetVsAch = 0;
+            if (!isNaN(disbursalAchieved) && !isNaN(disbursalTarget) && disbursalTarget !== 0) {
+                targetVsAch = disbursalAchieved / disbursalTarget;
+                document.getElementById('targetVsAch').innerText = targetVsAch.toFixed(2);
+            } else {
+                document.getElementById('targetVsAch').innerText = "N/A";
+            }
+
+            // --- Calculation of Main Incentive ---
+            let mainIncentive = 0;
+            if (monthsInSystem <= 3) {
+                // Logic for FBM <= 3 months, based on disbursal count > 2
+                mainIncentive = (disbursalAchieved > 2) ? disbursalAmount * 0.0003 : 0;
+            } else if (monthsInSystem > 3) {
+                // Logic for FBM > 3 months
+                if (targetVsAch > 1.2) {
+                    mainIncentive = disbursalAmount * 0.0007;
+                } else if (targetVsAch >= 1.01) {
+                    mainIncentive = disbursalAmount * 0.0005;
+                } else if (targetVsAch >= 0.9) {
+                    mainIncentive = disbursalAmount * 0.0004;
+                } else if (targetVsAch >= 0.7) {
+                    mainIncentive = disbursalAmount * 0.0003;
+                } else {
+                    mainIncentive = 0;
+                }
+            }
+            document.getElementById('mainIncentive').innerText = `₹${mainIncentive.toLocaleString('en-IN')}`;
+
+            // --- Calculation of Additional Incentive ---
+            let additionalIncentive = 0;
+            if (targetVsAch < 0.7 && disbursalAmount >= 25000000) {
+                const additionalCrores = Math.floor((disbursalAmount - 25000000) / 10000000);
+                additionalIncentive = 5000 + (additionalCrores * 1000);
+                
+                // Add the 10 Cr bonus if applicable to the additional incentive
+                if (disbursalAmount >= 100000000) {
+                    additionalIncentive += 20000;
+                }
+            }
+            document.getElementById('additionalIncentive').innerText = `₹${additionalIncentive.toLocaleString('en-IN')}`;
+
+            // --- Calculation of Total Incentive ---
+            let totalIncentive = 0;
+            if (targetVsAch >= 0.7) {
+                totalIncentive = mainIncentive;
+            } else {
+                totalIncentive = additionalIncentive;
+            }
+
+            document.getElementById('totalIncentive').innerText = `₹${totalIncentive.toLocaleString('en-IN')}`;
+        }
+    </script>
+</body>
+</html>
